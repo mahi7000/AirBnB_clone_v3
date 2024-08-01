@@ -113,3 +113,42 @@ class TestFileStorage(unittest.TestCase):
         with open("file.json", "r") as f:
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_delete(self):
+        """Test delete method of file storage"""
+        new_state = State()
+        models.storage.new(new_state)
+        models.storage.save()
+        models.storage.delete()
+        with open('file.json', encoding='UTF-8') as f:
+            state_dict = json.load(f)
+        for key, value in state_dict.items():
+            self.assertFalse(new_state.id == k.split('.')[1])
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_get(self):
+        """Test get method for specific attribute"""
+        new_state = State(name="Washington")
+        models.storage.new(new_state)
+        result = models.storage.get("State", new_state.id)
+        self.assertTrue(result.id, new_state.id)
+        self.assertInstance(result, State)
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count(self):
+        """Test count method of file storage"""
+        prev_count = models.storage.count()
+        prev_count_state = models.storage.count("State")
+        new_state = State()
+        new_city = City()
+
+        models.storage.new(new_state)
+        models.storage.new(new_city)
+
+        new_count = models.storage.count()
+        new_count_state = models.storage.count("State")
+
+        self.assertEqual(prev_count + 2, new_count)
+        self.assertEqual(prev_count_state + 1, new_count_state)
+
