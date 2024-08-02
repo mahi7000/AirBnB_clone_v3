@@ -10,7 +10,8 @@ from models.state import State
 @app_views.route('/states', methods=['GET'], strict_slashes=False)
 def get_all_states():
     """gets the list of all State objects"""
-    return jsonify([state.to_dict() for state in storage.all("State").values()])
+    return jsonify([
+                state.to_dict() for state in storage.all("State").values()])
 
 
 @app_views.route('/states/<string:state_id>', methods=['GET'],
@@ -43,7 +44,7 @@ def create_state():
         return make_response(jsonify({"error": "Not a JSON"}), 400)
     if "name" not in data:
         return make_response(jsonify({"error":  "Missing name"}), 400)
-    
+
     new_state = State(**data)
     new_state.save()
     return make_response(jsonify(new_state.to_dict()), 201)
