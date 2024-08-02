@@ -69,7 +69,6 @@ class FileStorage:
         """call reload() method for deserializing the JSON file to objects"""
         self.reload()
 
-
     def get(self, cls, id):
         """
         Return the object based on class and id
@@ -79,7 +78,6 @@ class FileStorage:
                 if key.split('.')[1] == id:
                     return value
         return None
-
 
     def count(self, cls=None):
         """counts the number of object in storage
