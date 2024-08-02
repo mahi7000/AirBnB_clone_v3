@@ -92,7 +92,6 @@ class TestFileStorage(unittest.TestCase):
         self.assertTrue(len(all_stored_object) > 0)
         self.assertIn(new_state.id, all_stored_object)
 
-
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_new(self):
         """test that new adds an object to the database"""
