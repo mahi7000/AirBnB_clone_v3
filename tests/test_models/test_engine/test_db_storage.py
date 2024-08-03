@@ -142,7 +142,7 @@ class TestFileStorage(unittest.TestCase):
         self.assertIsNone(fake_object)
 
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
-    def test_save(self):
+    def test_count(self):
         """Test method for obtaining an instance of db storage"""
         storage = models.DBStorage()
         storage.reload()
