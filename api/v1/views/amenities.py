@@ -6,11 +6,13 @@ from flask import abort, jsonify, make_response, request
 from models import storage
 from models.amenity import Amenity
 
+
 @app_views.route('/amenities', methods=['GET'], strict_slashes=False)
 def get_all_amenities():
     """retrieves the list of all Amenity objects"""
     return jsonify([
                 a.to_dict() for a in storage.all("Amenity").values()])
+
 
 @app_views.route('/amenities/<string:amenity_id>', methods=['GET'],
                  strict_slashes=False)
@@ -46,6 +48,7 @@ def create_amenity():
     amenity = Amenity(**data)
     amenity.save()
     return make_response(jsonify(amenity.to_dict()), 201)
+
 
 @app_views.route('/amenities/<string:amenity_id>', methods=['PUT'],
                  strict_slashes=False)
