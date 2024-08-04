@@ -3,10 +3,11 @@
 Module View Cities
 """
 from api.v1.views import app_views
-from flask import Flask, abort, jsonify, make_response, request
+from flask import abort, jsonify, make_response, request
 from models import storage
 from models.city import City
 from models.place import Place
+from models.user import User
 
 
 @app_views.route('/cities/<city_id>/places', methods=['GET'],
@@ -25,7 +26,7 @@ def get_place(place_id):
     """ Retrieves a Place object """
     place = storage.get('Place', place_id)
     if place is None:
-        return abort(404)
+        abort(404)
     return jsonify(place.to_dict())
 
 
@@ -35,11 +36,11 @@ def delete_place(place_id):
     """Delete place information using id"""
     place = storage.get('Place', place_id)
     if place:
-        storage.delete(place)
+        place.delete()
         storage.save()
         return make_response(jsonify({}), 200)
     else:
-        return abort(404)
+        abort(404)
 
 
 @app_views.route('/cities/<city_id>/places', methods=['POST'],
@@ -51,7 +52,7 @@ def create_place(city_id):
 
     city = storage.get('City', city_id)
     if not city:
-        return abort(404)
+        abort(404)
 
     data = request.get_json()
     if not data:
@@ -59,7 +60,7 @@ def create_place(city_id):
     if "user_id" not in data:
         return make_response(jsonify({"error": "Missing user_id"}), 400)
     if storage.get('User', data['user_id']) is None:
-        return abort(404)
+        abort(404)
     if "name" not in data:
         return make_response(jsonify({"error": "Missing name"}), 400)
 
