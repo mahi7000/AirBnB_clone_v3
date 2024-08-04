@@ -2,7 +2,7 @@
 """
 Module for Places review
 """
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, make_response
 from api.v1.views import app_views
 from models import storage
 from models.review import Review
@@ -39,3 +39,34 @@ def delete_review(review_id):
         return jsonify({}), 200
     else:
         return abort(404)
+    
+@app_views.route('/places/<place_id>/reviews', methods=['POST'], strict_slashes=False)
+def create_review(place_id):
+    """POST to make changes to reviews"""
+
+    place = storage.get('Place', place_id)
+    if place is None:
+        abort(404)
+
+    review = request.get_json()
+    if not review:
+        return make_response(jsonify({'error': 'Not a JSON'}), 400)
+    if 'user_id' not in review:
+        return make_response(jsonify({'error': 'Missing user_id'}), 400)
+    if 'text' not in review:
+        return make_response(jsonify({'error': 'Missing text'}), 400)
+
+    user_id = review.get("user_id")
+    user = storage.get('User', user_id)
+    if user is None:
+        abort(404)
+
+    fresh_review = Review(**review)
+    fresh_review.place_id = place.id
+    fresh_review.user_id = user.id
+    storage.new(fresh_review)
+    storage.save()
+
+    return jsonify(fresh_review.to_dict()), 201
+
+
