@@ -16,3 +16,13 @@ def  get_all_reviews(place_id):
         return jsonify([review.to_dict() for review in reviews])
     else:
         return abort(404)
+    
+    
+@app_views.route('/reviews/<review_id>', strict_slashes=False)
+def get_review(review_id):
+    """ Method to retrieve a Review """
+    review = storage.get('Review', review_id)
+    if review:
+        return jsonify(review.to_dict())
+    else:
+        return abort(404)
