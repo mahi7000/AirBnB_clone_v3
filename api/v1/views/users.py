@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Module View Cities
+Module View user
 """
 from api.v1.views import app_views
 from flask import Flask, abort, jsonify, make_response, request
