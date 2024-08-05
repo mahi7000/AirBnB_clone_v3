@@ -69,7 +69,7 @@ def update_user(user_id):
     """Update a User object"""
     data = request.get_json()
     
-    if not data or type(data) != dict:
+    if not data or type(data) != to_dict():
         return jsonify({'error': 'Not a JSON'}), 400
     
     user = storage.get('User', user_id)
