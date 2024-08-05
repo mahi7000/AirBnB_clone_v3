@@ -8,7 +8,7 @@ from models import storage
 from models.user import User
 
 
-@app_views.route('/users', method['GET'], strict_slashes=False)
+@app_views.route('/users', methods=['GET'], strict_slashes=False)
 def get_all_users():
     """List of all users
     """
@@ -19,7 +19,7 @@ def get_all_users():
         return abort(404)
 
 
-@app_views.route('/users/<user_id>', strict_slashes=False)
+@app_views.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
 def get_user(user_id):
     """gets a particular user"""
     user = storage.get('User', user_id)
