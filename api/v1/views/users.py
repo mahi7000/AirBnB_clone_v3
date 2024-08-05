@@ -78,4 +78,4 @@ def update_user(user_id):
         setattr(user, key, value)
 
     storage.save()
-    return jsonify(user.to_dict())
+    return make_resonse(jsonify(user.to_dict()), 200)
