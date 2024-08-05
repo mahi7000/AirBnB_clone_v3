@@ -10,11 +10,12 @@ from models.state import State
 @app_views.route('/states', methods=['GET'], strict_slashes=False)
 def get_all_states():
     """gets the list of all State objects"""
-    lis = []
     states = storage.all("State").values()
-    for state in states:
-        lis.append(state.to_dict())
-    return jsonify(lis)
+    if states:
+        states_list = [state.to_dict() for state in states]
+        return jsonify(states_list)
+    else:
+        return abort(404)
 
 
 @app_views.route('/states/<string:state_id>', methods=['GET'],
@@ -33,10 +34,11 @@ def delete_state(state_id):
     """delete state information using id"""
     state = storage.get("State", state_id)
     if state is None:
-        abort(404)
-    state.delete()
-    storage.save()
-    return make_response(jsonify({}), 200)
+        return abort(404)
+    else:
+        storage.delete(state)
+        storage.save()
+        return make_response(jsonify({}), 200)
 
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)

@@ -8,13 +8,15 @@ from models import storage
 from models.user import User
 
 
-@app_views.route('/users', strict_slashes=False)
+@app_views.route('/users', method['GET'], strict_slashes=False)
 def get_all_users():
     """List of all users
     """
     all_user = storage.all('User').values()
     if all_user:
         return jsonify([user.to_dict() for user in all_user])
+    else:
+        return abort(404)
 
 
 @app_views.route('/users/<user_id>', strict_slashes=False)
@@ -43,7 +45,7 @@ def delete_user(user_id):
 def create_user():
     """Create a user"""
     if request.content_type != 'application/json':
-        return abort(404)
+        return abort(404, 'Not a JSON')
 
     data = request.get_json()
     if not data:
@@ -56,7 +58,8 @@ def create_user():
         return make_response(jsonify({'error': 'Missing password'}), 400)
 
     user = User(**data)
-    user.save()
+    storage.new(user)
+    storage.save()
     return jsonify(user.to_dict(), 201)
 
 
@@ -65,15 +68,19 @@ def update_user(user_id):
     """Update a User object"""
     user = storage.get('User', user_id)
     data = request.get_json()
-    if user:
-        if not data:
-            return make_response(jsonify({'error': 'Not a JSON'}), 400)
-        if request.content_type != 'application/json':
-            return make_response(jsonify({'error': 'Not a JSON'}), 400)
-        for key, value in data.items():
-            if key not in ['id', 'email', 'created_at', 'updated_at']:
-                setattr(user, key, value)
-        user.save()
-        return jsonify(user.to_dict()), 200
-    else:
+
+    if user is None:
         return abort(404)
+
+    if request.content_type != 'application/json':
+        return make_response(jsonify({'error': 'Not a JSON'}), 400)
+
+    if not data:
+        return make_response(jsonify({'error': 'Not a JSON'}), 400)
+
+    for key, value in data.items():
+        if key not in ['id', 'created_at', 'updated_at']:
+            setattr(user, key, value)
+
+    user.save()
+    return jsonify(user.to_dict()), 200
