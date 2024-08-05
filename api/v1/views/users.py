@@ -66,21 +66,16 @@ def create_user():
 @app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
 def update_user(user_id):
     """Update a User object"""
-    user = storage.get('User', user_id)
     data = request.get_json()
-
-    if user is None:
-        return abort(404)
-
-    if request.content_type != 'application/json':
-        return make_response(jsonify({'error': 'Not a JSON'}), 400)
-
     if not data:
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
 
-    for key, value in data.items():
-        if key not in ['id', 'created_at', 'updated_at']:
-            setattr(data, key, value)
+    user = storage.get('User', user_id)
+    if not user:
+        return abort(404)
 
-    storage.save(user)
-    return jsonify(user.to_dict()), 200
+    for key, value in data.items():
+        setattr(user, key, value)
+
+    storage.save()
+    return jsonify(user.to_dict())
