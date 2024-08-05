@@ -10,12 +10,8 @@ from models.state import State
 @app_views.route('/states', methods=['GET'], strict_slashes=False)
 def get_all_states():
     """gets the list of all State objects"""
-    states = storage.all("State").values()
-    if states:
-        states_list = [state.to_dict() for state in states]
-        return jsonify(states_list)
-    else:
-        return abort(404)
+    return jsonify(
+            [state.to_dict() for state in storage.all("State").values()])
 
 
 @app_views.route('/states/<string:state_id>', methods=['GET'],
@@ -34,21 +30,20 @@ def delete_state(state_id):
     """delete state information using id"""
     state = storage.get("State", state_id)
     if state is None:
-        return abort(404)
-    else:
-        storage.delete(state)
-        storage.save()
-        return make_response(jsonify({}), 200)
+        abort(404)
+    storage.delete(state)
+    storage.save()
+    return make_response(jsonify({}), 200)
 
 
 @app_views.route('/states', methods=['POST'], strict_slashes=False)
 def create_state():
     """creates state and returns the new state"""
     data = request.get_json()
-    if not data:
+    if data is None:
         return make_response(jsonify({"error": "Not a JSON"}), 400)
     if "name" not in data:
-        return make_response(jsonify({"error": "Missing name"}), 400)
+        return make_response(jsonify({"error":  "Missing name"}), 400)
 
     new_state = State(**data)
     new_state.save()
@@ -63,7 +58,7 @@ def update_state(state_id):
     if state is None:
         abort(404)
     data = request.get_json()
-    if not data:
+    if data is None:
         return make_response(jsonify({"error": "Not a JSON"}), 400)
     for key, value in data.items():
         if key not in ['id', 'created_at', 'updated_at']:
