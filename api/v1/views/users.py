@@ -45,7 +45,7 @@ def delete_user(user_id):
 def create_user():
     """Create a user"""
     if request.content_type != 'application/json':
-        return abort(404, 'Not a JSON')
+        return make_response(jsonify({'error': 'Not a JSON'}), 400)
 
     data = request.get_json()
     if not data:
