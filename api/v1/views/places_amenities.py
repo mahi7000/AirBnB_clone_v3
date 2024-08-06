@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-Index route for AirBnB clone v3 API v1
+Index route
 """
 
 from api.v1.views import app_views
@@ -26,7 +26,7 @@ def get_amenities(place_id):
 
 
 @app_views.route("/places/<place_id>/amenities/<amenity_id>", methods=['DELETE'], strict_slashes=False)
-def remove_amenity_from_place(place_id, amenity_id):
+def delete_aminity(place_id, amenity_id):
     p_storage = type(storage).__name__
     place = storage.get(Place, place_id)
     if not place:
@@ -53,7 +53,7 @@ def remove_amenity_from_place(place_id, amenity_id):
 
 
 @app_views.route("/places/<place_id>/amenities/<amenity_id>", methods=['POST'], strict_slashes=False)
-def link_amenity_to_place(place_id, amenity_id):
+def get_link_pamenity(place_id, amenity_id):
     p_storage = type(storage).__name__
     place = storage.get(Place, place_id)
     if not place:
